@@ -2,9 +2,12 @@ package ru.sbtqa.tag.stepdefs;
 
 import cucumber.api.DataTable;
 import org.openqa.selenium.WebElement;
+import ru.sbtqa.tag.pagefactory.Page;
+import ru.sbtqa.tag.pagefactory.PageManager;
 import ru.sbtqa.tag.pagefactory.context.PageContext;
 import ru.sbtqa.tag.pagefactory.environment.Environment;
 import ru.sbtqa.tag.pagefactory.exceptions.PageException;
+import ru.sbtqa.tag.pagefactory.exceptions.PageInitializationException;
 import ru.sbtqa.tag.pagefactory.reflection.HtmlReflection;
 import ru.sbtqa.tag.qautils.errors.AutotestError;
 import ru.yandex.qatools.htmlelements.element.Button;
@@ -44,6 +47,7 @@ import ru.yandex.qatools.htmlelements.element.TextInput;
 /**
  * Step Definitions for html-plugin.
  * Common action with pages describes by html-elements.
+ * @param <T>
  */
 public class HtmlGenericSteps<T extends HtmlGenericSteps<T>> extends WebGenericSteps<T> {
 
@@ -51,12 +55,18 @@ public class HtmlGenericSteps<T extends HtmlGenericSteps<T>> extends WebGenericS
         HtmlSetupSteps.initHtml();
     }
 
+    public <E extends Page> E openPage(Class<E> type) throws PageInitializationException {
+        return PageManager.getPage(type);
+    }
+
+    
     /**
      * Execute action with no parameters inside block element User|he keywords
      * are optional
      *
      * @param block path or name of the block
      * @param action title of the action to execute
+     * @return 
      * @throws NoSuchMethodException if corresponding method doesn't exist in
      * specified block
      */

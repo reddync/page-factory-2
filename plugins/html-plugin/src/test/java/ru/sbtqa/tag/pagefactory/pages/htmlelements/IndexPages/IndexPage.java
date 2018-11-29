@@ -11,13 +11,13 @@ import ru.yandex.qatools.htmlelements.element.TextBlock;
 public class IndexPage extends HTMLPage {
 
     @ElementTitle(value = "menu")
-    private MenuBlock menu;
+    public MenuBlock menu;
 
     @ElementTitle("Sample text")
     @FindBy(xpath = "//*[@id='samples']/p[@class='lead']")
-    private TextBlock sampleText;
+    public TextBlock sampleText;
 
     @ElementTitle("License text")
     @FindBy(xpath = "//*[@id='license']/p[@class='lead']")
-    private TextBlock licenseText;
+    public TextBlock licenseText;
 }

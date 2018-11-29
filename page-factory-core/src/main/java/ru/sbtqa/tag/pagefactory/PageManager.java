@@ -42,11 +42,12 @@ public class PageManager {
      * Initialize page with specified title and save its instance to
      * {@link PageContext#currentPage} for further use
      *
+     * @param <T>
      * @param title a page title
      * @return the page instance
      * @throws PageInitializationException if failed to execute corresponding page constructor
      */
-    public static Page getPage(String title) throws PageInitializationException {
+    public static <T extends Page> T getPage(String title) throws PageInitializationException {
         if (null == PageContext.getCurrentPage()
                 || !PageContext.getCurrentPageTitle().equals(title)
                 || Environment.getDriverService().isDriverEmpty()) {
@@ -58,12 +59,13 @@ public class PageManager {
     /**
      * Get Page by class
      *
+     * @param <T>
      * @param pageClass a page class
      * @return the page object
      * @throws PageInitializationException if failed to execute corresponding page constructor
      */
-    public static Page getPage(Class<? extends Page> pageClass) throws PageInitializationException {
-        Page page = bootstrapPage(pageClass);
+    public static <T extends Page> T getPage(Class<? extends Page> pageClass) throws PageInitializationException {
+        T page = bootstrapPage(pageClass);
             if (page == null) {
                 throw new AutotestError("Page object with title '" + pageClass + "' is not registered");
             }
@@ -79,13 +81,13 @@ public class PageManager {
      * @return the initialized page object
      * @throws PageInitializationException if failed to execute corresponding page constructor
      */
-    private static Page bootstrapPage(Class<?> page) throws PageInitializationException {
+    private static <T extends Page> T bootstrapPage(Class<?> page) throws PageInitializationException {
         if (page != null) {
             try {
                 @SuppressWarnings("unchecked")
                 Constructor<Page> constructor = ((Constructor<Page>) page.getConstructor());
                 constructor.setAccessible(true);
-                return  constructor.newInstance();
+                return  (T) constructor.newInstance();
             } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
                 throw new PageInitializationException("Failed to initialize page '" + page + "'", e);
             }
@@ -97,9 +99,9 @@ public class PageManager {
      * @param title a page title
      * @return the page class
      */
-    private static Class<? extends Page> getPageClass(String title) {
+    private static <T extends Page> Class<T> getPageClass(String title) {
         for (Map.Entry<Class<? extends Page>, Map<Field, String>> pageEntry : PAGES_REPOSITORY.entrySet()) {
-            Class<? extends Page> page = pageEntry.getKey();
+            Class<T> page = (Class<T>) pageEntry.getKey();
             String pageTitle = null;
             if (null != page.getAnnotation(PageEntry.class)) {
                 pageTitle = page.getAnnotation(PageEntry.class).title();

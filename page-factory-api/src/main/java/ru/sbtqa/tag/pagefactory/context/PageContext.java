@@ -18,8 +18,8 @@ public class PageContext {
         PageContext.currentPageTitle = currentPageTitle;
     }
 
-    public static Page getCurrentPage() {
-        return currentPage;
+    public static <T extends Page> T getCurrentPage() {
+        return (T) currentPage;
     }
 
     public static void setCurrentPage(Page currentPage) {
