@@ -1,10 +1,14 @@
 package ru.sbtqa.tag.stepdefs;
 
+import cucumber.api.java.After;
+import io.qameta.allure.Step;
 import ru.sbtqa.tag.pagefactory.environment.Environment;
 import ru.sbtqa.tag.pagefactory.find.FindUtils;
 import ru.sbtqa.tag.pagefactory.properties.Configuration;
 import ru.sbtqa.tag.pagefactory.reflection.DefaultReflection;
 import ru.sbtqa.tag.pagefactory.tasks.ConnectToLogTask;
+import ru.sbtqa.tag.pagefactory.tasks.DisposeTask;
+import ru.sbtqa.tag.pagefactory.tasks.DisposeTaskHandler;
 import ru.sbtqa.tag.pagefactory.tasks.KillProcessesTask;
 import ru.sbtqa.tag.pagefactory.tasks.StartVideoTask;
 import ru.sbtqa.tag.pagefactory.tasks.StopVideoTask;
@@ -14,19 +18,17 @@ public class CoreSetupSteps {
 
     private static final Configuration PROPERTIES = Configuration.create();
 
-    private CoreSetupSteps() {}
 
-    public static void preSetUp() {
+    public static void setUp() {
         TaskHandler.addTask(new ConnectToLogTask());
         TaskHandler.addTask(new KillProcessesTask());
         TaskHandler.addTask(new StartVideoTask());
 
         Environment.setReflection(new DefaultReflection());
         Environment.setFindUtils(new FindUtils());
-    }
 
-    public static void setUp() {
         TaskHandler.handleTasks();
+        DisposeTaskHandler.addTask(new DisposeTask());
     }
 
     public static void tearDown() {
@@ -36,5 +38,10 @@ public class CoreSetupSteps {
         if (!Environment.isDriverEmpty() && !PROPERTIES.getShared()) {
             Environment.getDriverService().demountDriver();
         }
+    }
+
+    @After
+    public void handleDispose() {
+        DisposeTaskHandler.handleTasks();
     }
 }

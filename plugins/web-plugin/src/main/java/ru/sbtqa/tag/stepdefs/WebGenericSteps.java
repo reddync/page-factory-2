@@ -39,6 +39,7 @@ import ru.sbtqa.tag.qautils.errors.AutotestError;
 public class WebGenericSteps<T extends WebGenericSteps<T>> extends CoreGenericSteps<T> {
 
     public WebGenericSteps() {
+        CoreSetupSteps.setUp();
         WebSetupSteps.initWeb();
     }
 

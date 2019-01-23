@@ -14,11 +14,6 @@ import ru.sbtqa.tag.stepdefs.ApiSteps;
 
 public class ApiStepDefs extends ru.sbtqa.tag.stepdefs.ApiSteps {
 
-    @Before
-    public void iniApi() {
-        super.initApi();
-    }
-
     /**
      * {@inheritDoc}
      */

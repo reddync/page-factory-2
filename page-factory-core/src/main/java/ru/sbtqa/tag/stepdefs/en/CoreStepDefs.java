@@ -18,20 +18,10 @@ import ru.sbtqa.tag.stepdefs.CoreSetupSteps;
 
 public class CoreStepDefs extends CoreGenericSteps<CoreStepDefs> {
 
-    @Before(order = 0)
-    public void preSetUp() {
-        CoreSetupSteps.preSetUp();
+    public CoreStepDefs() {
+        super();
     }
 
-    @Before(order = 99999)
-    public void setUp() {
-        CoreSetupSteps.setUp();
-    }
-
-    @After(order = 1)
-    public void tearDown() {
-        CoreSetupSteps.tearDown();
-    }
 
     /**
      * {@inheritDoc}

@@ -9,11 +9,6 @@ import ru.sbtqa.tag.stepdefs.HtmlSetupSteps;
 
 public class HtmlStepDefs extends HtmlGenericSteps<HtmlStepDefs> {
 
-    @Before(order = 2)
-    public void initHtml() {
-        HtmlSetupSteps.initHtml();
-    }
-
     /**
      * {@inheritDoc}
      */

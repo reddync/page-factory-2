@@ -34,14 +34,15 @@ import ru.yandex.qatools.htmlelements.element.*;
  * @param <T> type of steps - any successor {@code HtmlGenericSteps}
  * @see <a href="https://cucumber.io/docs/reference#step-definitions">Cucumber
  * documentation</a>
- *
- *
+ * <p>
+ * <p>
  * Step Definitions for html-plugin.
  * Common action with pages describes by html-elements.
  */
 public class HtmlGenericSteps<T extends HtmlGenericSteps<T>> extends WebGenericSteps<T> {
 
     public HtmlGenericSteps() {
+        super();
         HtmlSetupSteps.initHtml();
     }
 
@@ -49,11 +50,11 @@ public class HtmlGenericSteps<T extends HtmlGenericSteps<T>> extends WebGenericS
      * Execute action with no parameters inside block element User|he keywords
      * are optional
      *
-     * @param block path or name of the block
+     * @param block  path or name of the block
      * @param action title of the action to execute
-     * @return Returns itself 
+     * @return Returns itself
      * @throws NoSuchMethodException if corresponding method doesn't exist in
-     * specified block
+     *                               specified block
      */
     public T actionInBlock(String block, String action) throws NoSuchMethodException {
         ((HtmlReflection) Environment.getReflection()).executeMethodByTitleInBlock(block, action);
@@ -64,12 +65,12 @@ public class HtmlGenericSteps<T extends HtmlGenericSteps<T>> extends WebGenericS
      * Execute action with parameters taken from specified {@link DataTable}
      * inside block element User|he keywords are optional
      *
-     * @param block path or name of the block
-     * @param action title of the action to execute
+     * @param block     path or name of the block
+     * @param action    title of the action to execute
      * @param dataTable table of parameters
      * @return Returns itself
      * @throws NoSuchMethodException if corresponding method doesn't exist in
-     * specified block
+     *                               specified block
      */
     public T actionInBlock(String block, String action, DataTable dataTable) throws NoSuchMethodException {
         ((HtmlReflection) Environment.getReflection()).executeMethodByTitleInBlock(block, action, dataTable);
@@ -80,12 +81,12 @@ public class HtmlGenericSteps<T extends HtmlGenericSteps<T>> extends WebGenericS
      * Execute action with one parameter inside block element User|he keywords
      * are optional
      *
-     * @param block path or name of the block
+     * @param block  path or name of the block
      * @param action title of the action to execute
-     * @param param parameter
+     * @param param  parameter
      * @return Returns itself
      * @throws NoSuchMethodException if corresponding method doesn't exist in
-     * specified block
+     *                               specified block
      */
     public T actionInBlock(String block, String action, String... param) throws NoSuchMethodException {
         ((HtmlReflection) Environment.getReflection()).executeMethodByTitleInBlock(block, action, param);
@@ -97,11 +98,11 @@ public class HtmlGenericSteps<T extends HtmlGenericSteps<T>> extends WebGenericS
      * optional
      *
      * @param listTitle title of the list to search for
-     * @param value required value of the element. for text elements value is
-     * being checked via getText() method
+     * @param value     required value of the element. for text elements value is
+     *                  being checked via getText() method
      * @return Returns itself
      * @throws PageException if page wasn't initialized of required list wasn't
-     * found
+     *                       found
      */
     public T find(String listTitle, String value) throws PageException {
         List<WebElement> elements = ((HtmlFindUtils) Environment.getFindUtils()).findList(null, value);

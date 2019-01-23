@@ -30,10 +30,11 @@ import ru.sbtqa.tag.api.utils.FromResponseUtils;
  * @see <a href="https://cucumber.io/docs/reference#step-definitions">Cucumber
  * documentation</a>
  */
-public class ApiSteps extends ApiSetupSteps {
+public class ApiSteps extends CoreGenericSteps {
 
     public ApiSteps() {
-        initApi();
+        super();
+        ApiSetupSteps.initApi();
     }
 
     static final ThreadLocal<ApiSteps> storage = withInitial(ApiSteps::new);

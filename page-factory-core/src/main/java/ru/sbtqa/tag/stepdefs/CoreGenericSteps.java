@@ -48,7 +48,6 @@ public class CoreGenericSteps<T extends CoreGenericSteps<T>> {
     private static final Configuration PROPERTIES = Configuration.create();
 
     public CoreGenericSteps() {
-        CoreSetupSteps.preSetUp();
         CoreSetupSteps.setUp();
     }
 

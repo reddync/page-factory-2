@@ -7,6 +7,10 @@ import ru.sbtqa.tag.qautils.strategies.MatchStrategy;
 
 public class MobileSteps {
 
+    public MobileSteps() {
+        MobileSetupSteps.initMobile();
+    }
+
     /**
      * Swipe until text is visible
      *

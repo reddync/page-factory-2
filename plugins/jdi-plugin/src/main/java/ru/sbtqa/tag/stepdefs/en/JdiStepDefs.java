@@ -1,12 +1,13 @@
 package ru.sbtqa.tag.stepdefs.en;
 
-import cucumber.api.java.Before;
 import ru.sbtqa.tag.stepdefs.JdiSetupSteps;
+import ru.sbtqa.tag.stepdefs.JdiSteps;
 
-public class JdiStepDefs {
+public class JdiStepDefs extends JdiSteps {
 
-    @Before
-    public void initJDI() {
+    public JdiStepDefs() {
+        super();
         JdiSetupSteps.initJDI();
     }
+
 }
