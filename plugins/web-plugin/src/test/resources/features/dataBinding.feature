@@ -7,6 +7,7 @@ Feature: Data sources
     * user clicks the button "Contact"
     * user is on the page "Contact"
 
+    @sdata
   Scenario: Data From Feature Tag
     * user inserts fragment "fill fragment"
       | first name          | button name |

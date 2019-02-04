@@ -1,6 +1,8 @@
 package ru.sbtqa.tag.stepdefs;
 
 import cucumber.api.DataTable;
+import cucumber.api.java.After;
+import cucumber.api.java.Before;
 import static java.lang.String.format;
 import java.util.List;
 import org.openqa.selenium.Keys;
@@ -14,9 +16,12 @@ import ru.sbtqa.tag.pagefactory.exceptions.FragmentException;
 import ru.sbtqa.tag.pagefactory.exceptions.PageException;
 import ru.sbtqa.tag.pagefactory.exceptions.PageInitializationException;
 import ru.sbtqa.tag.pagefactory.properties.Configuration;
+import ru.sbtqa.tag.pagefactory.tasks.DisposeTaskHandler;
+import ru.sbtqa.tag.pagefactory.tasks.SetupTaskHandler;
 import ru.sbtqa.tag.pagefactory.transformer.enums.Condition;
 import ru.sbtqa.tag.pagefactory.utils.Wait;
 import ru.sbtqa.tag.qautils.errors.AutotestError;
+import static ru.sbtqa.tag.stepdefs.CoreSetupSteps.setUp;
 
 /**
  * Basic step definitions, that should be available on every project Notations
@@ -47,9 +52,6 @@ public class CoreGenericSteps<T extends CoreGenericSteps<T>> {
     private static final Logger LOG = LoggerFactory.getLogger(CoreGenericSteps.class);
     private static final Configuration PROPERTIES = Configuration.create();
 
-    public CoreGenericSteps() {
-        CoreSetupSteps.setUp();
-    }
 
     /**
      * Initialize a page with corresponding title (defined via

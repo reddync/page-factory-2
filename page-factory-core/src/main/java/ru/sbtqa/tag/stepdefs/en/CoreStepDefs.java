@@ -11,15 +11,26 @@ import java.util.List;
 import ru.sbtqa.tag.pagefactory.exceptions.FragmentException;
 import ru.sbtqa.tag.pagefactory.exceptions.PageException;
 import ru.sbtqa.tag.pagefactory.exceptions.PageInitializationException;
+import ru.sbtqa.tag.pagefactory.tasks.DisposeTaskHandler;
+import ru.sbtqa.tag.pagefactory.tasks.SetupTaskHandler;
 import ru.sbtqa.tag.pagefactory.transformer.ConditionTransformer;
 import ru.sbtqa.tag.pagefactory.transformer.enums.Condition;
 import ru.sbtqa.tag.stepdefs.CoreGenericSteps;
 import ru.sbtqa.tag.stepdefs.CoreSetupSteps;
+import static ru.sbtqa.tag.stepdefs.CoreSetupSteps.setUp;
 
 public class CoreStepDefs extends CoreGenericSteps<CoreStepDefs> {
 
-    public CoreStepDefs() {
-        super();
+
+    @Before
+    public void handleSetup() {
+        setUp();
+        SetupTaskHandler.handleTasks();
+    }
+
+    @After
+    public void handleDispose() {
+        DisposeTaskHandler.handleTasks();
     }
 
 
@@ -241,14 +252,14 @@ public class CoreStepDefs extends CoreGenericSteps<CoreStepDefs> {
     @Override
     @Когда("^(?:user |he )?is waiting for the value of the \"([^\"]*)\" attribute of the element \"([^\"]*)\" should (not )?contain \"([^\"]*)\"$")
     public CoreStepDefs waitAttributeContains(String attribute, String elementName,
-            @Transform(ConditionTransformer.class) Condition negation, String partAttributeValue) throws PageException {
+                                              @Transform(ConditionTransformer.class) Condition negation, String partAttributeValue) throws PageException {
         return super.waitAttributeContains(attribute, elementName, negation, partAttributeValue);
     }
 
     @Override
     @Когда("^(?:user |he )?is waiting (\\d+) second(?:s)? for the value of the \"([^\"]*)\" attribute of the element \"([^\"]*)\" should (not )?contain \"([^\"]*)\"$")
     public CoreStepDefs waitAttributeContains(int timeout, String attribute, String elementName,
-            @Transform(ConditionTransformer.class) Condition negation, String partAttributeValue) throws PageException {
+                                              @Transform(ConditionTransformer.class) Condition negation, String partAttributeValue) throws PageException {
         return super.waitAttributeContains(timeout, attribute, elementName, negation, partAttributeValue);
     }
 
@@ -263,7 +274,7 @@ public class CoreStepDefs extends CoreGenericSteps<CoreStepDefs> {
     public CoreStepDefs waitElementContainsText(int timeout, String elementName, @Transform(ConditionTransformer.class) Condition negation, String text) throws PageException {
         return super.waitElementContainsText(timeout, elementName, negation, text);
     }
-    
+
     @Override
     @Когда("^(?:user |he )?is waiting for the element \"([^\"]*)\" to become clickable$")
     public CoreStepDefs waitClickability(String elementName) throws PageException {

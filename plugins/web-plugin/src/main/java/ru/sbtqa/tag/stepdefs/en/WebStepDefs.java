@@ -1,15 +1,20 @@
 package ru.sbtqa.tag.stepdefs.en;
 
+import cucumber.api.java.Before;
 import cucumber.api.java.en.And;
 import cucumber.api.java.en.When;
 import ru.sbtqa.tag.pagefactory.exceptions.PageInitializationException;
 import ru.sbtqa.tag.pagefactory.exceptions.WaitException;
+import ru.sbtqa.tag.stepdefs.CoreSetupSteps;
 import ru.sbtqa.tag.stepdefs.WebGenericSteps;
+import ru.sbtqa.tag.stepdefs.WebSetupSteps;
 
 public class WebStepDefs extends WebGenericSteps<WebStepDefs> {
 
-    public WebStepDefs() {
-        super();
+    @Before
+    public void sdfsdf() {
+        CoreSetupSteps.setUp();
+        WebSetupSteps.initWeb();
     }
 
     /**

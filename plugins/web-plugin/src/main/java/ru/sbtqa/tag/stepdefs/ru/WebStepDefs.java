@@ -5,13 +5,11 @@ import cucumber.api.java.en.When;
 import cucumber.api.java.ru.И;
 import ru.sbtqa.tag.pagefactory.exceptions.PageInitializationException;
 import ru.sbtqa.tag.pagefactory.exceptions.WaitException;
+import ru.sbtqa.tag.stepdefs.CoreSetupSteps;
 import ru.sbtqa.tag.stepdefs.WebGenericSteps;
+import ru.sbtqa.tag.stepdefs.WebSetupSteps;
 
 public class WebStepDefs extends WebGenericSteps<WebStepDefs> {
-
-    public WebStepDefs() {
-        super();
-    }
 
     /**
      * {@inheritDoc}

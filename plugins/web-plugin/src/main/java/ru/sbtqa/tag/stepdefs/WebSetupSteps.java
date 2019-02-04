@@ -14,9 +14,6 @@ public class WebSetupSteps {
 
     static final ThreadLocal<WebDriverService> storage = withInitial(WebDriverService::new);
 
-    private WebSetupSteps() {
-    }
-
     public static synchronized void initWeb() {
         PageManager.cachePages();
 

@@ -17,11 +17,6 @@ import ru.sbtqa.tag.stepdefs.CoreSetupSteps;
 
 public class CoreStepDefs extends CoreGenericSteps<CoreStepDefs> {
 
-    public CoreStepDefs() {
-        super();
-    }
-
-
     /**
      * {@inheritDoc}
      */
