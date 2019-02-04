@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import ru.sbtqa.tag.datajack.exceptions.DataException;
 import ru.sbtqa.tag.pagefactory.exceptions.FragmentException;
 
 public class FragmentReplacer {
@@ -17,7 +18,7 @@ public class FragmentReplacer {
     private MutableGraph<Object> fragmentsGraph;
     private Map<ScenarioDefinition, String> scenarioLanguageMap;
 
-    public FragmentReplacer(List<CucumberFeature> features) throws FragmentException {
+    public FragmentReplacer(List<CucumberFeature> features) throws FragmentException, DataException {
         this.features = FragmentCacheUtils.cacheFragmentsToFeatures(this.getClass(), features);
         this.scenarioLanguageMap = FragmentCacheUtils.cacheScenarioLanguage(this.features);
         Map<String, ScenarioDefinition> fragmentsMap = FragmentCacheUtils.cacheFragmentsAsMap(this.features);

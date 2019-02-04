@@ -1,14 +1,11 @@
 {
-  "Admin": {
-    "first name": "Alex",
-    "last name": "Kauffman"
+  "Fragment 1": {
+    "name": "Test 1"
   },
-  "Operator": {
-    "first name": "Jessey",
-    "last name": "James"
+  "Fragment 2": {
+    "name": "Test 2"
   },
-  "User": {
-    "first name": "Frank",
-    "last name": "Thompson"
+  "Fragment 3": {
+    "name": "Test 3"
   }
 }

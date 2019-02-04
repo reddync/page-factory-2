@@ -57,6 +57,25 @@ public class DataParser {
         }
     }
 
+    public void lookingForData(List<CucumberFeature> cucumberFeatures) throws DataException, IllegalAccessException {
+
+        for (CucumberFeature cucumberFeature : cucumberFeatures) {
+            featureDataTagValue = "$" + Props.get("data.initial.collection");
+            GherkinDocument gherkinDocument = cucumberFeature.getGherkinFeature();
+            Feature feature = gherkinDocument.getFeature();
+
+            setFeatureDataTag(parseTags(feature.getTags()));
+            List<ScenarioDefinition> featureChildren = feature.getChildren();
+
+            for (ScenarioDefinition scenarioDefinition : featureChildren) {
+                List<Tag> currentScenarioTags = getScenarioTags(scenarioDefinition);
+                setCurrentScenarioTag(parseTags(currentScenarioTags));
+                String scenarioDataValue = parseTags(currentScenarioTags);
+                FieldUtils.writeField(scenarioDefinition, "description", scenarioDataValue == null ? featureDataTagValue : scenarioDataValue, true);
+            }
+        }
+    }
+
     private List<Tag> getScenarioTags(ScenarioDefinition scenarioDefinition) {
         try {
             return (List<Tag>) FieldUtils.readField(scenarioDefinition, "tags", true);

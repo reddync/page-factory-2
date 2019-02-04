@@ -20,6 +20,11 @@ public class CucumberAspect {
 
         List<CucumberFeature> cucumberFeatures = (List<CucumberFeature>) joinPoint.getArgs()[0];
 
+        if (DataFactory.getDataProvider() != null) {
+            DataParser dataParser = new DataParser();
+            dataParser.lookingForData(cucumberFeatures);
+        }
+
         if (PROPERTIES.isFragmentsEnabled()) {
             FragmentReplacer fragmentReplacer = new FragmentReplacer(cucumberFeatures);
             fragmentReplacer.replace();

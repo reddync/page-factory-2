@@ -13,6 +13,13 @@ Feature: Data sources
       | ${Admin.first name} | send        |
     * user checks in the element "first name" value "Alex"
 
+  @data-fragment @data=$Data{Admin}
+  Scenario: Data From Scenario Tag
+    * user inserts fragment "$Fragments{Fragment 1.name}"
+      | first name    | button name |
+      | ${first name} | send        |
+    * user checks in the element "first name" value "Alex"
+
   @data=$Data{Admin}
   Scenario: Data From Scenario Tag
     * user inserts fragment "fill fragment"
