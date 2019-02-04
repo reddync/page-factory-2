@@ -11,6 +11,7 @@ import gherkin.ast.GherkinDocument;
 import gherkin.ast.ScenarioDefinition;
 import gherkin.ast.Step;
 import gherkin.ast.Tag;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +29,7 @@ import ru.sbtqa.tag.pagefactory.data.DataFactory;
 import ru.sbtqa.tag.pagefactory.exceptions.FragmentException;
 import ru.sbtqa.tag.pagefactory.properties.Configuration;
 import ru.sbtqa.tag.pagefactory.reflection.DefaultReflection;
+import ru.sbtqa.tag.qautils.errors.AutotestError;
 
 class FragmentCacheUtils {
 
@@ -85,6 +87,7 @@ class FragmentCacheUtils {
                 graph.addNode(scenario);
 
                 List<Step> steps = scenario.getSteps();
+                List<Step> newSteps = new ArrayList<>();
                 for (Step step : steps) {
                     String language = scenarioLanguageMap.get(scenario);
 
@@ -97,6 +100,7 @@ class FragmentCacheUtils {
                                 String data = (String) FieldUtils.readField(scenario, "description", true);
                                 Pattern stepDataPattern = Pattern.compile(AbstractDataProvider.PATH_PARSE_REGEX);
                                 Matcher stepDataMatcher = stepDataPattern.matcher(scenarioName);
+
                                 StringBuilder replacedStep = new StringBuilder(scenarioName);
 
                                 while (stepDataMatcher.find()) {
@@ -112,15 +116,29 @@ class FragmentCacheUtils {
                                     replacedStep = replacedStep.replace(stepDataMatcher.start(), stepDataMatcher.end(), parsedValue);
                                     stepDataMatcher = stepDataPattern.matcher(replacedStep);
                                 }
-                                scenarioAsFragment = fragmentsMap.get(parsedValue);
+
+//                                Step newStep = new Step(step.getLocation(), step.getKeyword(),
+//                                        step.getText().replaceAll("\"([^\"]*)\"", "\"" + replacedStep.toString() + "\""), step.getArgument());
+                                try {
+                                    FieldUtils.writeField(step, "text", step.getText().replaceAll("\"([^\"]*)\"", "\"" + replacedStep.toString() + "\""), true);
+                                } catch (IllegalAccessException e) {
+                                    throw new AutotestError("Не найден шаг", e);
+                                }
+//                                newSteps.add(newStep);
+
+                                scenarioAsFragment = fragmentsMap.get(replacedStep.toString());
                             } catch (IllegalAccessException e) {
                                 throw new FragmentException(String.format("There is no scenario (fragment) with name \"%s\"", scenarioName));
                             }
+                        } else {
+                            newSteps.add(step);
                         }
+
                         graph.putEdge(scenario, scenarioAsFragment);
                     }
 
                 }
+
             }
 
         }
