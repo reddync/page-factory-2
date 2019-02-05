@@ -11,31 +11,30 @@ import gherkin.ast.GherkinDocument;
 import gherkin.ast.ScenarioDefinition;
 import gherkin.ast.Step;
 import gherkin.ast.Tag;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.sbtqa.tag.datajack.exceptions.DataException;
-import ru.sbtqa.tag.datajack.providers.AbstractDataProvider;
-import ru.sbtqa.tag.pagefactory.data.DataFactory;
+import ru.sbtqa.tag.pagefactory.data.DataUtils;
 import ru.sbtqa.tag.pagefactory.exceptions.FragmentException;
 import ru.sbtqa.tag.pagefactory.properties.Configuration;
 import ru.sbtqa.tag.pagefactory.reflection.DefaultReflection;
-import ru.sbtqa.tag.qautils.errors.AutotestError;
 
 class FragmentCacheUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(FragmentCacheUtils.class);
     private static final Configuration PROPERTIES = Configuration.create();
     private static final String FRAGMENT_TAG = "@fragment";
+
+    private static final String PARAMETER_REGEXP = "\"([^\"]*)\"";
+    private static final String ERROR_FRAGMENT_NOT_FOUND = "There is no scenario (fragment) with name \"%s\"";
+    private static final String STEP_FIELD_NAME = "text";
 
     private FragmentCacheUtils() {
     }
@@ -79,16 +78,13 @@ class FragmentCacheUtils {
         MutableGraph<Object> graph = GraphBuilder.directed().allowsSelfLoops(false).build();
 
         for (CucumberFeature cucumberFeature : features) {
-            GherkinDocument gherkinDocument = cucumberFeature.getGherkinFeature();
-            Feature feature = gherkinDocument.getFeature();
-            List<ScenarioDefinition> scenarioDefinitions = feature.getChildren();
+            String featureDataTagValue = DataUtils.formFeatureData(cucumberFeature);
 
-            for (ScenarioDefinition scenario : scenarioDefinitions) {
+            for (ScenarioDefinition scenario : DataUtils.getScenarioDefinitions(cucumberFeature)) {
                 graph.addNode(scenario);
+                String scenarioDataTagValue = DataUtils.formScenarioDataTag(scenario, featureDataTagValue);
 
-                List<Step> steps = scenario.getSteps();
-                List<Step> newSteps = new ArrayList<>();
-                for (Step step : steps) {
+                for (Step step : scenario.getSteps()) {
                     String language = scenarioLanguageMap.get(scenario);
 
                     if (FragmentUtils.isStepFragmentRequire(step, language)) {
@@ -96,59 +92,39 @@ class FragmentCacheUtils {
                         ScenarioDefinition scenarioAsFragment = fragmentsMap.get(scenarioName);
 
                         if (scenarioAsFragment == null) {
-                            try {
-                                String data = (String) FieldUtils.readField(scenario, "description", true);
-                                Pattern stepDataPattern = Pattern.compile(AbstractDataProvider.PATH_PARSE_REGEX);
-                                Matcher stepDataMatcher = stepDataPattern.matcher(scenarioName);
+                            String scenarioNameFromData = getScenarioNameFromData(step, scenarioName, scenarioDataTagValue);
+                            scenarioAsFragment = fragmentsMap.get(scenarioNameFromData);
 
-                                StringBuilder replacedStep = new StringBuilder(scenarioName);
-
-                                while (stepDataMatcher.find()) {
-                                    String collection = stepDataMatcher.group(1);
-                                    String value = stepDataMatcher.group(2);
-
-                                    if (collection == null) {
-                                        DataFactory.updateCollection(DataFactory.getDataProvider().getByPath(data));// не учтен тег фичи (если у сценария нет)
-                                    }
-
-                                    String builtPath = "$" + (collection == null ? "" : collection) + value;
-                                    String parsedValue = DataFactory.getDataProvider().getByPath(builtPath).getValue();
-                                    replacedStep = replacedStep.replace(stepDataMatcher.start(), stepDataMatcher.end(), parsedValue);
-                                    stepDataMatcher = stepDataPattern.matcher(replacedStep);
-                                }
-
-//                                Step newStep = new Step(step.getLocation(), step.getKeyword(),
-//                                        step.getText().replaceAll("\"([^\"]*)\"", "\"" + replacedStep.toString() + "\""), step.getArgument());
-                                try {
-                                    FieldUtils.writeField(step, "text", step.getText().replaceAll("\"([^\"]*)\"", "\"" + replacedStep.toString() + "\""), true);
-                                } catch (IllegalAccessException e) {
-                                    throw new AutotestError("Не найден шаг", e);
-                                }
-//                                newSteps.add(newStep);
-
-                                scenarioAsFragment = fragmentsMap.get(replacedStep.toString());
-                            } catch (IllegalAccessException e) {
-                                throw new FragmentException(String.format("There is no scenario (fragment) with name \"%s\"", scenarioName));
+                            if (scenarioAsFragment == null) {
+                                throw new FragmentException(String.format(ERROR_FRAGMENT_NOT_FOUND, scenarioNameFromData));
                             }
-                        } else {
-                            newSteps.add(step);
                         }
-
                         graph.putEdge(scenario, scenarioAsFragment);
                     }
-
                 }
-
             }
-
         }
-
-
         if (Graphs.hasCycle(graph)) {
             LOG.error("Fragments graph contains cycles");
         }
-
         return graph;
+    }
+
+    private static String getScenarioNameFromData(Step step, String scenarioName, String scenarioDataTagValue) throws FragmentException, DataException {
+        try {
+            String scenarioNameFromData = DataUtils.replaceDataPlaceholders(scenarioName, scenarioDataTagValue);
+
+            if (scenarioNameFromData.equals(scenarioName)) {
+                throw new FragmentException(String.format(ERROR_FRAGMENT_NOT_FOUND, scenarioName));
+            }
+
+            String replacedStepText = step.getText().replaceFirst(PARAMETER_REGEXP, "\"" + scenarioNameFromData + "\"");
+            FieldUtils.writeField(step, STEP_FIELD_NAME, replacedStepText, true);
+
+            return scenarioNameFromData;
+        } catch (IllegalAccessException e) {
+            throw new FragmentException(String.format("The field \"%s\" is missing from the class \"%s\"", STEP_FIELD_NAME, step.getClass()));
+        }
     }
 
     static Map<ScenarioDefinition, String> cacheScenarioLanguage(List<CucumberFeature> features) {
